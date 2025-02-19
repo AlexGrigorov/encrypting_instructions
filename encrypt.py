@@ -1,26 +1,28 @@
-# id133633232
+# id133647009
 """Шифрованные инструкции."""
+import string
 
 
 def encrypting_instructions(instructions: str) -> str:
     """Программа для расшифровки сжатых сообщений."""
-    list_of_tuples: list = []
-    current_list: str = ''
-    current_multiplier: str = ''
-    numbers = '0123456789'
-    for value in instructions:
-        if value in numbers:
-            current_multiplier += value
-        elif value in '[':
-            list_of_tuples.append((current_multiplier, current_list))
-            current_list = ''
-            current_multiplier = ''
-        elif value in ']':
-            previous_num, previous_str = list_of_tuples.pop()
-            current_list = previous_str + int(previous_num) * current_list
-        else:
-            current_list += value
-    return current_list
+    stack_values: list = []
+    part_instructions: str = ''
+    multiplier: str = ''
+    for symbol in instructions:
+        match symbol:
+            case _ if symbol in string.digits:
+                multiplier += symbol
+            case '[':
+                stack_values.append((multiplier, part_instructions))
+                part_instructions = multiplier = ''
+            case ']':
+                repeats, prev_command = stack_values.pop()
+                part_instructions = (
+                    prev_command + int(repeats) * part_instructions
+                )
+            case _:
+                part_instructions += symbol
+    return part_instructions
 
 
 if __name__ == '__main__':
